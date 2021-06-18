@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/main.qml</file>
+        <file>qml/ContactPage.qml</file>
+        <file>qml/ConversationPage.qml</file>
+        <file>qml/HomePage.qml</file>
+        <file>qml/LayoutSection.qml</file>
+        <file>qml/ChatToolBar.qml</file>
+        <file>qml/BetterButton.qml</file>
+    </qresource>
+</RCC>
