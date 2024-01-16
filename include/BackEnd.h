@@ -27,7 +27,7 @@ public:
     Q_INVOKABLE void sendMessageToRecipientClicked( const QString& recipient, const QString& message );
 
 signals:
-    void statusChanged_signal( QString newStatus );
+    void statusChanged_signal( bool newStatus );
     void someMessage_signal( QString message );
     void systemMessage_signal( QString message );
 

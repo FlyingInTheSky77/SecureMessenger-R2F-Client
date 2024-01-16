@@ -24,6 +24,7 @@ int SessionKey::getIntermediateNumberForServer()
 void SessionKey::calculateSessionKey( const int& intermadiate_number_from_server )
 {
     mpz_t intermediate_number_from_server_mpz;
+    mpz_init( intermediate_number_from_server_mpz );
     mpz_set_ui( intermediate_number_from_server_mpz, intermadiate_number_from_server );
 
     mpz_powm_ui( session_key_mpz_, intermediate_number_from_server_mpz, random_number_, p_mpz_mod_ );
