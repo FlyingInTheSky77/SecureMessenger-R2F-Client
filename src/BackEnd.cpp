@@ -36,12 +36,7 @@ bool BackEnd::getStatus()
 
 void BackEnd::setStatus_slot( bool newStatus )
 {
-    if ( newStatus )
-    {
-        emit statusChanged_signal( tr( "CONNECTED" ) );
-        return;
-    }
-    emit statusChanged_signal( tr ("DISCONNECTED" ) );
+    emit statusChanged_signal( newStatus );
 }
 
 void BackEnd::receivedSomething_slot( QString message )

@@ -7,15 +7,21 @@ import r2f.SqlContactModel 1.0
 Page
 {
     id: root
+    property bool currentStatus_: false
     Connections
     {
         target: backend
         function onStatusChanged_signal( newStatus )
         {
-            ti.append( addMsg( qsTr( "connection status changed:" ) + newStatus ) );
-            if ( currentStatus !== true )
+            if ( currentStatus_ === newStatus )
             {
-                btn_connect.enabled = true;
+                // do nothing
+            }
+            else
+            {
+                currentStatus_ = newStatus;
+                ti.append( addMsg( qsTr( "connection status changed: " ) + currentStatus_ ) );
+                btn_connect.enabled = currentStatus_;
             }
         }
         function onSomeMessage_signal( msg )
