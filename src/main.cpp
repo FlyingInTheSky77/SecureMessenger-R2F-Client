@@ -20,6 +20,7 @@ int main( int argc, char *argv[] )
     qmlRegisterType< BackEnd >( "io.qt.Backend", 1, 0, "BackEnd" );
     qmlRegisterType< SqlContactModel >( "r2f.SqlContactModel", 1, 0, "SqlContactModel" );
     qmlRegisterType< SqlConversationModel >( "r2f.SqlConversationModel", 1, 0, "SqlConversationModel" );
+
     BackEnd BackEndObject;
 
     QQmlApplicationEngine engine;

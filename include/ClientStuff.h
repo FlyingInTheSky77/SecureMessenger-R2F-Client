@@ -50,6 +50,8 @@ signals:
 
     void recipientOffline_signal( QString message );
 
+    void updateQMLModelView_sigal();
+
 public slots:
     void closeConnection_slot();
 
@@ -71,6 +73,7 @@ private:
 
     void processMessageFromContact( const QJsonObject& encrypt_object );
     void updateContactList( const QJsonObject& jObjList );
+    void addNewUserToContactList( const QJsonObject obj );
     void letsSeeWhatWeGotFromServer( const QJsonObject& obj );
 
     std::string encryptString( const std::string& befor_encrypt_QString );

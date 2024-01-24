@@ -17,3 +17,15 @@ SqlContactModel::SqlContactModel( QObject *parent ) :
     if ( lastError().isValid() )
         qFatal( "Cannot set query on SqlContactModel: %s", qPrintable(lastError().text() ) );
 }
+
+void SqlContactModel::refresh()
+{
+    QSqlQuery query;
+
+    if ( !query.exec( "SELECT name, activityStatus FROM Contacts" ) )
+        qFatal( "Contacts SELECT query failed: %s", qPrintable(query.lastError().text() ) );
+
+    setQuery( query );
+    if ( lastError().isValid() )
+        qFatal( "Cannot set query on SqlContactModel: %s", qPrintable(lastError().text() ) );
+}

@@ -19,8 +19,17 @@ Page
         {
             pageTitle.text1 = qsTr( "Contacts" );
             pageTitle.color = "black";
+        }        
+        function onUpdateQMLModelView_sigal()
+        {
+            contactModel.refresh()
         }
     }
+
+    SqlContactModel {
+        id: contactModel
+    }
+
     header: ChatToolBar
     {
         ToolButton
@@ -46,18 +55,18 @@ Page
 
     ListView
     {
-        id: listView
+        id: contactModellistView
         anchors.fill: parent
         topMargin: 48
         leftMargin: 48
         bottomMargin: 48
         rightMargin: 48
         spacing: 20
-        model: SqlContactModel {}
+        model: contactModel
         delegate: ItemDelegate
         {
             text: model.display
-            width: listView.width - listView.leftMargin - listView.rightMargin
+            width: contactModellistView.width - contactModellistView.leftMargin - contactModellistView.rightMargin
             leftPadding: 32
             onClicked:
             {
