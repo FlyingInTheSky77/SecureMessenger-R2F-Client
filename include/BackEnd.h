@@ -1,5 +1,6 @@
 #pragma once
 #include "ClientStuff.h"
+#include "SqlContactModel.h"
 
 #include <QObject>
 #include <QJsonDocument>
@@ -7,6 +8,7 @@
 #include <QJsonParseError>
 #include <QDebug>
 #include <QJsonArray>
+
 #include <memory>
 
 class BackEnd : public QObject
@@ -42,6 +44,8 @@ signals:
 
     void sendLoginName_signal( const QString& name );
     void needNameinConversationWithNow_signal();
+
+    void updateQMLModelView_sigal();
 
 public slots:
     void setStatus_slot( bool newStatus );

@@ -130,6 +130,15 @@ void ClientStuff::letsSeeWhatWeGotFromServer( const QJsonObject& obj )
     Server_Code server_code{ static_cast< Server_Code >( code_from_server_int ) };
     switch ( server_code )
     {
+        case Server_Code::changes_in_contact_list:
+        {
+            const QString obj_in_Qstring{ obj.value( "object" ).toString() };
+            const QJsonObject decrypt_obj{ decryptQJsonObjFromEncryptQString( obj_in_Qstring ) };
+
+            addNewUserToContactList( decrypt_obj );
+            emit sendSystemInfo_signal( tr( "contacts list updated" ) );
+            break;
+        }
         case Server_Code::authorization_failed:
         {
             const QString obj_in_Qstring{ obj.value( "object" ).toString() };
@@ -280,6 +289,27 @@ void ClientStuff::updateContactList( const QJsonObject& jObjList )
    }
 }
 
+void ClientStuff::addNewUserToContactList ( const QJsonObject obj )
+{
+    const QString name{ obj.value( "login" ).toString() };
+    const QString activityStatus{ obj.value( "activityStatus" ).toString() };
+
+    QSqlQuery query;
+
+    QString insertQuery = "INSERT INTO Contacts (name, activityStatus) VALUES (:name, :activityStatus)";
+    query.prepare(insertQuery);
+    query.bindValue(":name", name);
+    query.bindValue(":activityStatus", activityStatus);
+
+    if (query.exec()) {
+        qDebug() << "Data added successfully!";
+    } else {
+        qDebug() << "Failed to add data:" << query.lastError().text();
+    }
+
+    emit updateQMLModelView_sigal();
+}
+
 void ClientStuff::closeConnection_slot()
 {
     timeoutTimer_->stop();
@@ -316,7 +346,7 @@ void ClientStuff::requestinConversationWithNow( const QString& name )
 void ClientStuff::resetInConversationPage()
 {
     inConversationPage_ = false;
-};
+}
 
 void ClientStuff::startConversationPage()
 {

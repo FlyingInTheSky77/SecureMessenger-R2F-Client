@@ -51,7 +51,7 @@ Page
         {
             contscts_show_buton.enabled = true;
             btn_disconnect.enabled = true;
-        }
+        }        
     }
 
     header: ChatToolBar

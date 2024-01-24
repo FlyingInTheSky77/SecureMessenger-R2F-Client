@@ -1,9 +1,9 @@
 #include "include/BackEnd.h"
 #include <memory>
 
-BackEnd::BackEnd( QObject *parent ) :
-    QObject( parent ),
-    client_ { std::make_unique< ClientStuff >() }
+BackEnd::BackEnd( QObject *parent )
+    : QObject( parent )
+    , client_ ( std::make_unique<ClientStuff>() )
 {
     setStatus_slot( client_->getStatus() );
 
@@ -17,6 +17,7 @@ BackEnd::BackEnd( QObject *parent ) :
     connect( client_.get(), &ClientStuff::inSystem_signal, this, &BackEnd::inSystem_slot );
     connect( client_.get(), &ClientStuff::weAreConnected_signal, this, &BackEnd::weAreConnected_slot );
     connect( client_.get(), &ClientStuff::contactOnline_signal, this, &BackEnd::contactOnline_signal );
+    connect( client_.get(), &ClientStuff::updateQMLModelView_sigal, this, &BackEnd::updateQMLModelView_sigal );
 }
 
 void BackEnd::weAreConnected_slot()
