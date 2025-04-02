@@ -135,6 +135,15 @@ Page
                             width: parent.width
                             font.pixelSize: defpixelSize
                             clip: true
+                            focus: true
+
+                            Component.onCompleted: {
+                                    servername.forceActiveFocus();
+                                }
+
+                            Keys.onTabPressed: {
+                                portnumber.focus = true;
+                            }
                         }
                     }
                     Rectangle
@@ -170,6 +179,10 @@ Page
                             width: parent.width
                             font.pixelSize: defpixelSize
                             clip: true
+
+                            Keys.onTabPressed: {
+                                username.focus = true;
+                            }
                         }
                     }
                     BetterButton
@@ -232,6 +245,10 @@ Page
                             width: parent.width
                             font.pixelSize: defpixelSize
                             clip: true
+
+                            Keys.onTabPressed: {
+                                password.focus = true;
+                            }
                         }
                     }
                 }
