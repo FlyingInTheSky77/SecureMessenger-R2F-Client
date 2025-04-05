@@ -6,6 +6,8 @@ import r2f.SqlContactModel 1.0
 
 Page
 {
+    property bool connected: false
+
     id: root
     property bool currentStatus_: false
     Connections
@@ -21,7 +23,6 @@ Page
             {
                 currentStatus_ = newStatus;
                 ti.append( addMsg( qsTr( "connection status changed: " ) + currentStatus_ ) );
-                btn_connect.enabled = currentStatus_;
             }
         }
         function onSomeMessage_signal( msg )
@@ -34,35 +35,24 @@ Page
         }
         function onWeAreConnected_signal()
         {
+            connected = true;
             singup.enabled = true;
             singin.enabled = true;
             btn_send.enabled = true;
-            btn_connect.enabled = false;
         }
         function onServerStoped_signal()
         {
             btn_send.enabled = false;
             singup.enabled = false;
             singin.enabled = false;
-            btn_connect.enabled = true;
-            btn_disconnect.enabled = false;
+            connected = false;
         }
         function onInSystem_signal()
         {
             contscts_show_buton.enabled = true;
-            btn_disconnect.enabled = true;
-        }        
-    }
-
-    header: ChatToolBar
-    {
-        Label
-        {
-            text: qsTr( "Start page" )
-            font.pixelSize: 20
-            anchors.centerIn: parent
         }
     }
+
             ColumnLayout
             {
                 Layout.preferredWidth: root.width
@@ -91,20 +81,9 @@ Page
                     Layout.leftMargin: 15
                     Layout.rightMargin: 15
                     id: connectdisconnect
-                    BetterButton
+
+                    Rectangle
                     {
-                        id: btn_connect
-                        Layout.fillWidth: true
-                        text: qsTr( "Connect" )
-                        color: enabled ? this.down ? "#78C37F" : "#87DB8D" : "#CED0D4"
-                        border.color: "#78C37F"
-                        onClicked:
-                        {
-                            ti.append( addMsg( qsTr( "system message: try to connect to server" ) ) );
-                            backend.connectClicked( servername.text, portnumber.text );
-                        }
-                    }
-                    Rectangle{
                         id:rec_server
                         Layout.fillWidth: true
                         height: servernameinputarea.height + 20
@@ -119,7 +98,8 @@ Page
                              font.pixelSize: defpixelSize
                          }
                     }
-                    Rectangle {
+                    Rectangle
+                    {
                         Layout.fillWidth: true
                         height: servername.height + 20
                         radius: 5
@@ -181,26 +161,33 @@ Page
                             clip: true
 
                             Keys.onTabPressed: {
-                                username.focus = true;
+                                btn_connect_disconnect.focus = true;
                             }
                         }
                     }
                     BetterButton
                     {
-                        id: btn_disconnect
-                        Layout.fillWidth: true
-                        enabled: !btn_connect.enabled
-                        text: qsTr ( "Disconnect" )
-                        color: enabled ? this.down ? "#DB7A74" : "#FF7E79" : "#CED0D4"
+                        id: btn_connect_disconnect
+                        text: connected ? qsTr("Disconnect") : qsTr("Connect")
+                        color: '#86a4e5'
                         onClicked:
                         {
-                            ti.append( addMsg( qsTr( "Button \"Disconnect\" from server clicked" ) ) );
-                            backend.disconnectClicked_slot();
-                            contscts_show_buton.enabled = false;
-                            singup.enabled = false;
-                            singin.enabled = false;
-                            btn_send.enabled = false;
-                            btn_connect.enabled = true;
+                            if( !connected )
+                            {
+                                ti.append(addMsg(qsTr("Trying to connect...")));
+                                backend.connectClicked(servername.text, portnumber.text);
+                            }
+                            else{
+                                ti.append( addMsg( qsTr( "Button \"Disconnect\" from server clicked" ) ) );
+                                backend.disconnectClicked_slot();
+                                contscts_show_buton.enabled = false;
+                                singup.enabled = false;
+                                singin.enabled = false;
+                                btn_send.enabled = false;
+                            }
+                        }
+                        Keys.onTabPressed: {
+                            username.focus = true;
                         }
                     }
                 }
@@ -290,6 +277,10 @@ Page
                             width: parent.width
                             font.pixelSize: defpixelSize
                             clip: true
+
+                            Keys.onTabPressed: {
+                                singin.focus = true;
+                            }
                         }
                     }
                 }
@@ -317,6 +308,10 @@ Page
                         onClicked: {
                             ti.append( addMsg( qsTr( "system message: trying to singin" ) ) );
                             backend.authorizationClicked( username.text, password.text );
+                        }
+
+                        Keys.onTabPressed: {
+                            singup.focus = true;
                         }
                     }
                     BetterButton
@@ -448,12 +443,12 @@ Page
             {
                 return "[" + currentTime() + "] " + someText;
             }
-                function currentTime()
-                {
-                    var now = new Date();
-                    var nowString = ( "0" + now.getHours() ).slice( -2 ) + ":"
-                            + ( "0" + now.getMinutes() ).slice( -2 ) + ":"
-                            + ( "0" + now.getSeconds() ).slice( -2 );
-                    return nowString;
-                }
+            function currentTime()
+            {
+                var now = new Date();
+                var nowString = ( "0" + now.getHours() ).slice( -2 ) + ":"
+                        + ( "0" + now.getMinutes() ).slice( -2 ) + ":"
+                        + ( "0" + now.getSeconds() ).slice( -2 );
+                return nowString;
+            }
 }
