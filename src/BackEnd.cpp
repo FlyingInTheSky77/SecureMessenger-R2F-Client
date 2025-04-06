@@ -1,5 +1,4 @@
 #include "include/BackEnd.h"
-#include <memory>
 
 BackEnd::BackEnd( QObject *parent )
     : QObject( parent )
@@ -18,6 +17,11 @@ BackEnd::BackEnd( QObject *parent )
     connect( client_.get(), &ClientStuff::weAreConnected_signal, this, &BackEnd::weAreConnected_slot );
     connect( client_.get(), &ClientStuff::contactOnline_signal, this, &BackEnd::contactOnline_signal );
     connect( client_.get(), &ClientStuff::updateQMLModelView_sigal, this, &BackEnd::updateQMLModelView_sigal );
+}
+
+void BackEnd::setConnectionInfo( const Config& config )
+{
+    client_ -> setConnectionInfo( config );
 }
 
 void BackEnd::weAreConnected_slot()
@@ -47,10 +51,15 @@ void BackEnd::receivedSomething_slot( QString message )
         disconnectClicked_slot();
 }
 
-void BackEnd::connectClicked( const QString hostAddress, QString portNumber)
+void BackEnd::connectClicked( const QString hostAddress, QString port )
 {
-    int portInInt = portNumber.toInt();
-    client_->connect2host( hostAddress, portInInt );
+    int portInt = port.toInt();
+    client_->connect2host( hostAddress, portInt );
+}
+
+void BackEnd::connectClicked()
+{
+    client_->connect2host();
 }
 
 void BackEnd::sendDirectlyToServerClicked( QString message )

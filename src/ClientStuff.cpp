@@ -65,12 +65,27 @@ ClientStuff::ClientStuff()
     connect( tcpSocket_.get(), &QTcpSocket::disconnected, this, &ClientStuff::closeConnection_slot );
 }
 
-void ClientStuff::connect2host( const QString& hostAddress, int portNumber )
+void ClientStuff::setConnectionInfo(const Config &config)
+{
+    host_ = config.ip;
+    port_ = config.port;
+}
+
+void ClientStuff::connect2host( const QString& hostAddress, const int port )
 {
     timeoutTimer_->start( 5000 );
     host_ = hostAddress;
-    portNumber_ = portNumber;
-    tcpSocket_->connectToHost( hostAddress, portNumber );
+    port_ = port;
+    tcpSocket_->connectToHost( host_, port_ );
+
+    connect( tcpSocket_.get(), &QTcpSocket::connected, this, &ClientStuff::connected_slot );
+    connect( tcpSocket_.get(), &QTcpSocket::readyRead, this, &ClientStuff::readyRead_slot );
+}
+
+void ClientStuff::connect2host()
+{
+    timeoutTimer_->start( 5000 );
+    tcpSocket_->connectToHost( host_, port_ );
 
     connect( tcpSocket_.get(), &QTcpSocket::connected, this, &ClientStuff::connected_slot );
     connect( tcpSocket_.get(), &QTcpSocket::readyRead, this, &ClientStuff::readyRead_slot );
