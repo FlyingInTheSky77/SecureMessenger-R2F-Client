@@ -1,9 +1,12 @@
 QT += quick core network sql
 
-CONFIG += c++14
+CONFIG += c++17
+
+DEFINES += APP_VARIANT_BASIC
 
 SOURCES += \
         src/ClientStuff.cpp \
+        src/ConfigLoader.cpp \
         src/SessionKey.cpp \
         src/SqlContactModel.cpp \
         src/SqlConversationModel.cpp \
@@ -25,6 +28,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     include/ClientStuff.h \
+    include/ConfigLoader.h \
     include/SessionKey.h \
     include/SqlContactModel.h \
     include/SqlConversationModel.h \

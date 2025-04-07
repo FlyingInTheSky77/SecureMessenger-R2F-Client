@@ -82,24 +82,103 @@ Page
                     Layout.rightMargin: 15
                     id: connectdisconnect
 
+                    Rectangle
+                    {
+                        id:rec_server
+                        Layout.fillWidth: true
+                        height: servernameinputarea.height + 20
+                        width: 50
+                        Text
+                        {
+                             id:servernameinputarea
+                             text: qsTr( "server:" )
+                             anchors.centerIn: rec_server
+                             leftPadding: 5
+                             rightPadding: 5
+                             font.pixelSize: defpixelSize
+                         }
+                    }
+                    Rectangle
+                    {
+                        Layout.fillWidth: true
+                        height: servername.height + 20
+                        radius: 5
+                        width: 100
+                        color: "#F4F2F5"
+                        border.width: 1
+                        TextInput
+                        {
+                            id: servername
+                            anchors.verticalCenter: parent.verticalCenter
+                            leftPadding: 3
+                            rightPadding: 3
+                            width: parent.width
+                            font.pixelSize: defpixelSize
+                            clip: true
+                            focus: true
+
+                            Component.onCompleted: {
+                                servername.forceActiveFocus();
+                            }
+
+                            Keys.onTabPressed: {
+                                portnumber.focus = true;
+                            }
+                        }
+                    }
+                    Rectangle
+                    {
+                        id: rec_port
+                        Layout.fillWidth: true
+                        height: port.height + 20
+                        width: 30
+                        Text
+                        {
+                            id:port
+                            text: qsTr( "port:" )
+                            font.pixelSize: defpixelSize
+                            anchors.centerIn: rec_port
+                        }
+                    }
+                    Rectangle
+                    {
+                        Layout.fillWidth: true
+                        height: portnumber.height + 20
+                        radius: 5
+                        width: 100
+                        color: "#F4F2F5"
+                        border.color: "gray"
+                        border.width: 1
+
+                        TextInput
+                        {
+                            id: portnumber
+                            anchors.verticalCenter: parent.verticalCenter
+                            leftPadding: 10
+                            rightPadding: 10
+                            width: parent.width
+                            font.pixelSize: defpixelSize
+                            clip: true
+
+                            Keys.onTabPressed: {
+                                btn_connect_disconnect.focus = true;
+                            }
+                        }
+                    }
                     BetterButton
                     {
                         id: btn_connect_disconnect
                         text: connected ? qsTr("Disconnect") : qsTr("Connect")
                         color: '#86a4e5'
-                        Layout.fillWidth: true
-
-                        Component.onCompleted: {
-                            btn_connect_disconnect.forceActiveFocus();
-                        }
-
                         onClicked:
                         {
                             if( !connected )
                             {
-                                backend.connectClicked();
+                                ti.append(addMsg(qsTr("Trying to connect...")));
+                                backend.connectClicked(servername.text, portnumber.text)
                             }
-                            else{
+                            else
+                            {
                                 ti.append( addMsg( qsTr( "Button \"Disconnect\" from server clicked" ) ) );
                                 backend.disconnectClicked_slot();
                                 contscts_show_buton.enabled = false;

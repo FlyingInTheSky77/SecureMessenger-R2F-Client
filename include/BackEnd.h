@@ -18,13 +18,15 @@ class BackEnd : public QObject
 
 public:
     explicit BackEnd( QObject *parent = nullptr );
+    void setConnectionInfo( const Config& config );
     bool getStatus();
     Q_INVOKABLE void registerClicked( const QString &login, const QString &password );
     Q_INVOKABLE void setNameinConversationWithWriteNow( QString name );
     Q_INVOKABLE void liveConversationPage();
     Q_INVOKABLE void startConversationPage();
     Q_INVOKABLE void authorizationClicked( const QString &login, const QString &password );
-    Q_INVOKABLE void connectClicked( const QString hostAddress, QString portNumber );
+    Q_INVOKABLE void connectClicked( const QString hostAddress, QString port );
+    Q_INVOKABLE void connectClicked();
     Q_INVOKABLE void sendDirectlyToServerClicked( QString message );
     Q_INVOKABLE void sendMessageToRecipientClicked( const QString& recipient, const QString& message );
 

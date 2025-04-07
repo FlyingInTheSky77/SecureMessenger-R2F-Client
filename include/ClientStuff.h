@@ -1,6 +1,8 @@
 #pragma once
-#include "SessionKey.h"
+
+#include "ConfigLoader.h"
 #include "messagecode.h"
+#include "SessionKey.h"
 
 #include <QString>
 #include <QTcpSocket>
@@ -18,13 +20,15 @@ class ClientStuff : public QObject
 
 public:
     ClientStuff();
+    void setConnectionInfo( const Config& config );
     bool getStatus();
     void contactRequest();
     void requestinConversationWithNow( const QString& name );
     void resetInConversationPage();
     void startConversationPage();
 
-    void connect2host( const QString& hostAddress, int portNumber );
+    void connect2host( const QString& hostAddress, const int port );
+    void connect2host();
 
     void registrationRequest( const QString& login, const QString& password );
     void authorizationRequest( const QString& login, const QString& password );
@@ -65,8 +69,10 @@ private:
     std::unique_ptr< QTimer > timeoutTimer_;
     bool status_;
     QString login_;
+
     QString host_;
-    int portNumber_;
+    int port_;
+
     QString inConversationWith_;
     bool inConversationPage_;
     SessionKey key_;
