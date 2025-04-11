@@ -26,7 +26,7 @@ static void connectToDatabase( QString user_login )
         qFatal( "Failed to create writable directory at %s", qPrintable( writeDir.absolutePath() ) );
 
     // Ensure that we have a writable location on all devices.
-    const QString fileName = writeDir.absolutePath() + "/chat-database.sqlite3" + user_login;
+    const QString fileName = writeDir.absolutePath() + "/R2FMessenger-database.sqlite3" + user_login;
     // When using the SQLite driver, open() will create the SQLite database if it doesn't exist.
     database.setDatabaseName( fileName );
     if ( !database.open() )
@@ -282,24 +282,52 @@ void ClientStuff::processMessageFromContact( const QJsonObject& encrypt_object )
 
 void ClientStuff::updateContactList( const QJsonObject& jObjList )
 {
+   qDebug() << "ClientStuff::updateContactList";
    QSqlQuery query;
+   QSet<QString> currentContactsFromServer;
+
    foreach ( QJsonValue jVal, jObjList )
    {
        const QJsonObject obj{ jVal.toObject() };
        const QString name{ obj.value( "login" ).toString() };
        const QString activityStatus{ obj.value( "activityStatus" ).toString() };
+
        if ( name == login_ )
        {
-           //do not insert the client's name into his contact list in QML
+           //do not insert the client's name into the contact list
            continue;
        }
-       query.prepare( "INSERT INTO Contacts (name, activityStatus) "
-                      "VALUES (:name, :activityStatus)");
-       query.bindValue( ":name", name );
-       query.bindValue( ":activityStatus", activityStatus );
-       if ( !query.exec() )
-       {
-           qDebug() << __FILE__ << __LINE__ << "something goes wrong or contact already is in database";
+
+       currentContactsFromServer.insert(name);
+
+       QSqlQuery checkQuery;
+       checkQuery.prepare("SELECT COUNT(*) FROM Contacts WHERE name = :name");
+       checkQuery.bindValue(":name", name);
+       checkQuery.exec();
+       checkQuery.next();
+
+       if (checkQuery.value(0).toInt() > 0) {
+           query.prepare("UPDATE Contacts SET activityStatus = :activityStatus WHERE name = :name");
+       } else {
+           query.prepare("INSERT INTO Contacts (name, activityStatus) VALUES (:name, :activityStatus)");
+       }
+
+       query.bindValue(":name", name);
+       query.bindValue(":activityStatus", activityStatus);
+       if (!query.exec()) {
+           qDebug() << __FILE__ << __LINE__ << "DB insert/update failed";
+       }
+   }
+
+   QSqlQuery selectQuery("SELECT name FROM Contacts");
+   while (selectQuery.next()) {
+       QString name = selectQuery.value(0).toString();
+       if (!currentContactsFromServer.contains(name)) {
+           query.prepare("UPDATE Contacts SET activityStatus = 'deleted' WHERE name = :name");
+           query.bindValue(":name", name);
+           if (!query.exec()) {
+               qDebug() << __FILE__ << __LINE__ << "Failed to mark contact as deleted";
+           }
        }
    }
 }

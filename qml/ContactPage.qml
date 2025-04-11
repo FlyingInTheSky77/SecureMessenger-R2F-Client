@@ -70,7 +70,7 @@ Page
             leftPadding: 32
             onClicked:
             {
-                root.StackView.view.push("qrc:/qml/ConversationPage.qml", { inConversationWith: model.display })
+                root.StackView.view.push("qrc:/qml/ConversationPage.qml", { inConversationWith: model.name })
             }
         }
     }
