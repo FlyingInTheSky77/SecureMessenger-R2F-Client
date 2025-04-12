@@ -145,13 +145,31 @@ void ClientStuff::letsSeeWhatWeGotFromServer( const QJsonObject& obj )
     Server_Code server_code{ static_cast< Server_Code >( code_from_server_int ) };
     switch ( server_code )
     {
-        case Server_Code::changes_in_contact_list:
+            case Server_Code::user_online:
+            {
+            const QString obj_in_Qstring{ obj.value( "object" ).toString() };
+            const QJsonObject decrypt_obj{ decryptQJsonObjFromEncryptQString( obj_in_Qstring ) };
+
+            updateUserStatus( decrypt_obj );
+            emit sendSystemInfo_signal( tr( "contacts list was updated: one contact is online againe" ) );
+            break;
+        }
+        case Server_Code::registred_new_user:
         {
             const QString obj_in_Qstring{ obj.value( "object" ).toString() };
             const QJsonObject decrypt_obj{ decryptQJsonObjFromEncryptQString( obj_in_Qstring ) };
 
             addNewUserToContactList( decrypt_obj );
-            emit sendSystemInfo_signal( tr( "contacts list updated" ) );
+            emit sendSystemInfo_signal( tr( "contacts list was updated: new user added" ) );
+            break;
+        }
+        case Server_Code::user_offline:
+        {
+            const QString obj_in_Qstring{ obj.value( "object" ).toString() };
+            const QJsonObject decrypt_obj{ decryptQJsonObjFromEncryptQString( obj_in_Qstring ) };
+
+            updateUserStatus( decrypt_obj );
+            emit sendSystemInfo_signal( tr( "contacts list was updated: one contact disconnected" ) );
             break;
         }
         case Server_Code::authorization_failed:
@@ -332,7 +350,7 @@ void ClientStuff::updateContactList( const QJsonObject& jObjList )
    }
 }
 
-void ClientStuff::addNewUserToContactList ( const QJsonObject obj )
+void ClientStuff::addNewUserToContactList ( const QJsonObject& obj )
 {
     const QString name{ obj.value( "login" ).toString() };
     const QString activityStatus{ obj.value( "activityStatus" ).toString() };
@@ -348,6 +366,48 @@ void ClientStuff::addNewUserToContactList ( const QJsonObject obj )
         qDebug() << "Data added successfully!";
     } else {
         qDebug() << "Failed to add data:" << query.lastError().text();
+    }
+
+    emit updateQMLModelView_sigal();
+}
+
+void ClientStuff::removeUserFromContactList( const QString& name )
+{
+    QSqlQuery query;
+    QString deleteQuery = "DELETE FROM Contacts WHERE name = :name";
+
+    query.prepare( deleteQuery );
+    query.bindValue( ":name", name );
+
+    if ( query.exec() ) {
+        qDebug() << "User" << name << "removed successfully from Contacts.";
+    } else {
+        qDebug() << "Failed to remove user:" << query.lastError().text();
+    }
+
+    emit updateQMLModelView_sigal();
+}
+
+void ClientStuff::updateUserStatus(const QJsonObject &obj)
+{
+    const QString name{ obj.value("login").toString() };
+    const QString activityStatus{ obj.value("activityStatus").toString() };
+
+    QSqlQuery query;
+
+    QString updateQuery = "UPDATE Contacts SET activityStatus = :activityStatus WHERE name = :name";
+    query.prepare(updateQuery);
+    query.bindValue(":activityStatus", activityStatus);
+    query.bindValue(":name", name);
+
+    if (query.exec()) {
+        if (query.numRowsAffected() > 0) {
+            qDebug() << "Status updated successfully!";
+        } else {
+            qDebug() << "No matching user found to update.";
+        }
+    } else {
+        qDebug() << "Failed to update status:" << query.lastError().text();
     }
 
     emit updateQMLModelView_sigal();
