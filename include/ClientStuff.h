@@ -78,9 +78,14 @@ private:
     SessionKey key_;
 
     void processMessageFromContact( const QJsonObject& encrypt_object );
+
     void updateContactList( const QJsonObject& jObjList );
-    void addNewUserToContactList( const QJsonObject obj );
+    void addNewUserToContactList( const QJsonObject& obj );
+    void updateUserStatus(const QJsonObject &obj);
+
     void letsSeeWhatWeGotFromServer( const QJsonObject& obj );
+
+    void removeUserFromContactList( const QString& name );
 
     std::string encryptString( const std::string& befor_encrypt_QString );
     QByteArray cryptQByteArray ( const QByteArray& jByte, const int& key );
