@@ -2,7 +2,19 @@ QT += quick core network sql
 
 CONFIG += c++17
 
-DEFINES += APP_VARIANT_BASIC
+# choose one: basic or custom
+VARIANT = basic
+# VARIANT = custom
+
+message(Build variant: $$VARIANT)
+
+equals(VARIANT, basic) {
+    DEFINES += APP_VARIANT_BASIC
+    RESOURCES += resourcesBasic.qrc
+} else {
+    message(added resourcesCustom.qrc)
+    RESOURCES += resourcesCustom.qrc
+}
 
 SOURCES += \
         src/ClientStuff.cpp \
@@ -12,8 +24,6 @@ SOURCES += \
         src/SqlConversationModel.cpp \
         src/main.cpp \
         src/BackEnd.cpp
-
-RESOURCES += qml.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
